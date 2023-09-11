@@ -41,11 +41,11 @@ import (
 )
 
 var (
-	listenAddr = flag.String("listen", ":80", "HTTP server listen address. Only applicable when --mode=server")
-	mode       = flag.String("mode", "server", "Whether to run in \"server\" mode or \"contained\" mode. The contained mode is used internally by the server mode.")
-	dev        = flag.Bool("dev", false, "run in dev mode (show help messages)")
-	numWorkers = flag.Int("workers", runtime.NumCPU(), "number of parallel gvisor containers to pre-spin up & let run concurrently")
-	container  = flag.String("untrusted-container", "gcr.io/golang-org/playground-sandbox-gvisor:latest", "container image name that hosts the untrusted binary under gvisor")
+	listenAddr     = flag.String("listen", ":80", "HTTP server listen address. Only applicable when --mode=server")
+	mode           = flag.String("mode", "server", "Whether to run in \"server\" mode or \"contained\" mode. The contained mode is used internally by the server mode.")
+	dev            = flag.Bool("dev", false, "run in dev mode (show help messages)")
+	numWorkers     = flag.Int("workers", runtime.NumCPU(), "number of parallel gvisor containers to pre-spin up & let run concurrently")
+	containerImage = flag.String("untrusted-container", "gcr.io/golang-org/playground-sandbox-gvisor:latest", "container image name that hosts the untrusted binary under gvisor")
 )
 
 const (
@@ -142,8 +142,8 @@ func main() {
 		log.Printf("Running in dev mode; container published to host at: http://localhost:8080/")
 		log.Printf("Run a binary with: curl -v --data-binary @/home/bradfitz/hello http://localhost:8080/run\n")
 	} else {
-		if out, err := exec.Command("docker", "pull", *container).CombinedOutput(); err != nil {
-			log.Fatalf("error pulling %s: %v, %s", *container, err, out)
+		if out, err := exec.Command("docker", "pull", *containerImage).CombinedOutput(); err != nil {
+			log.Fatalf("error pulling %s: %v, %s", *containerImage, err, out)
 		}
 		log.Printf("Listening on %s", *listenAddr)
 	}
@@ -454,7 +454,7 @@ func startContainer(ctx context.Context) (c *Container, err error) {
 		"--network=none",
 		"--memory="+fmt.Sprint(memoryLimitBytes),
 
-		*container,
+		*containerImage,
 		"--mode=contained")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
