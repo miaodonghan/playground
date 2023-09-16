@@ -45,6 +45,7 @@ var (
 	mode           = flag.String("mode", "server", "Whether to run in \"server\" mode or \"contained\" mode. The contained mode is used internally by the server mode.")
 	dev            = flag.Bool("dev", false, "run in dev mode (show help messages)")
 	numWorkers     = flag.Int("workers", runtime.NumCPU(), "number of parallel gvisor containers to pre-spin up & let run concurrently")
+	// Container image of this file, invokes runInGvisor(), and writes binary into stdin for execution.
 	containerImage = flag.String("untrusted-container", "gcr.io/golang-org/playground-sandbox-gvisor:latest", "container image name that hosts the untrusted binary under gvisor")
 )
 
